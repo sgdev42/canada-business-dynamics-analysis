@@ -1,0 +1,9 @@
+measure,measure_group,direction
+Active businesses,Stock,Neutral
+Opening businesses,Flow,Inflow
+Continuing businesses,Stock,Neutral
+Closing businesses,Flow,Outflow
+Reopening businesses,Flow,Inflow
+Entrants,Flow,Inflow
+Temporary closures,Flow,Outflow
+Exits,Flow,Outflow

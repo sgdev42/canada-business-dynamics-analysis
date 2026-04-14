@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Regional Business Openings & Closures (Q1 2024 vs Q1 2025)</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #1f2d3d;
+      --muted: #5b6b7a;
+      --accent: #005f73;
+      --good: #1f8a70;
+      --risk: #b23a48;
+      --line: #dce3ea;
+    }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 50px; }
+    h1, h2 { margin: 0 0 10px; }
+    .sub { color: var(--muted); margin-bottom: 22px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+    .card .k { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .card .t { font-size: 13px; color: var(--muted); }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 7px 6px; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); position: sticky; top: 0; background: var(--panel); }
+    ul { margin: 8px 0 0; }
+    li { margin: 6px 0; }
+    .fine { font-size: 12px; color: var(--muted); }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Business Openings vs Closures Across Canada by Region</h1>
+    <div class="sub">Source: Statistics Canada table 33-10-0270-01 | Timeframe: Jan-Mar 2024 vs Jan-Mar 2025 | Built: 2026-04-04</div>
+
+    <div class="grid">
+      <div class="card"><div class="k">135,088</div><div class="t">Openings (Q1 2025)</div></div>
+      <div class="card"><div class="k">134,632</div><div class="t">Closures (Q1 2025)</div></div>
+      <div class="card"><div class="k">456</div><div class="t">Net Openings (Q1 2025)</div></div>
+      <div class="card"><div class="k">-3,110</div><div class="t">Net Change vs Q1 2024</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>National Trend (Monthly)</h2>
+      
+<svg viewBox="0 0 980 320" role="img" aria-label="Monthly openings and closures line chart">
+  <style>
+    .axis { font: 11px sans-serif; fill: #34495e; }
+    .grid { stroke: #e6edf3; stroke-width: 1; }
+    .line-open { fill: none; stroke: #1f77b4; stroke-width: 3; }
+    .line-close { fill: none; stroke: #d62728; stroke-width: 3; }
+    .legend { font: 12px sans-serif; fill: #2c3e50; }
+  </style>
+  <line x1="70" y1="265.00" x2="950" y2="265.00" class="grid"/><text x="62" y="269.00" text-anchor="end" class="axis">43,168</text><line x1="70" y1="207.50" x2="950" y2="207.50" class="grid"/><text x="62" y="211.50" text-anchor="end" class="axis">43,923</text><line x1="70" y1="150.00" x2="950" y2="150.00" class="grid"/><text x="62" y="154.00" text-anchor="end" class="axis">44,679</text><line x1="70" y1="92.50" x2="950" y2="92.50" class="grid"/><text x="62" y="96.50" text-anchor="end" class="axis">45,435</text><line x1="70" y1="35.00" x2="950" y2="35.00" class="grid"/><text x="62" y="39.00" text-anchor="end" class="axis">46,190</text>
+  <polyline points="70.00,54.17 246.00,148.82 422.00,213.12 598.00,88.41 774.00,147.37 950.00,134.36" class="line-open"/>
+  <polyline points="70.00,245.83 246.00,208.70 422.00,232.90 598.00,119.37 774.00,166.17 950.00,119.30" class="line-close"/>
+  <text x="70" y="18" class="legend">Openings (blue) vs Closures (red), provinces/territories with available data</text>
+  <text x="70.00" y="300" text-anchor="middle" class="axis">2024-01</text><text x="246.00" y="300" text-anchor="middle" class="axis">2024-02</text><text x="422.00" y="300" text-anchor="middle" class="axis">2024-03</text><text x="598.00" y="300" text-anchor="middle" class="axis">2025-01</text><text x="774.00" y="300" text-anchor="middle" class="axis">2025-02</text><text x="950.00" y="300" text-anchor="middle" class="axis">2025-03</text>
+</svg>
+
+      <div class="fine">March 2025 net openings turned negative across regions with available data (openings 44,885 vs closures 45,083).</div>
+    </div>
+
+    <div class="panel">
+      <h2>Regional Shift in Net Openings (Q1 2025 vs Q1 2024)</h2>
+      <svg viewBox="0 0 980 446" role="img" aria-label="YoY net change by region">
+  <style>
+    .label { font: 12px sans-serif; fill: #2c3e50; }
+    .axis { stroke: #aeb8c2; stroke-width: 1; }
+    .pos { fill: #1f8a70; }
+    .neg { fill: #c0392b; }
+    .val { font: 11px sans-serif; fill: #2c3e50; }
+  </style>
+<line x1="595.0" y1="15" x2="595.0" y2="426" class="axis"/><text x="240" y="42.28" text-anchor="end" class="label">British Columbia</text><rect x="595.00" y="25.00" width="41.83" height="24" class="pos"/><text x="642.83" y="42.28" text-anchor="start" class="val">266</text><text x="240" y="75.28" text-anchor="end" class="label">Manitoba</text><rect x="595.00" y="58.00" width="27.05" height="24" class="pos"/><text x="628.05" y="75.28" text-anchor="start" class="val">172</text><text x="240" y="108.28" text-anchor="end" class="label">Northwest Territories</text><rect x="595.00" y="91.00" width="0.63" height="24" class="pos"/><text x="601.63" y="108.28" text-anchor="start" class="val">4</text><text x="240" y="141.28" text-anchor="end" class="label">New Brunswick</text><rect x="594.84" y="124.00" width="0.16" height="24" class="neg"/><text x="588.84" y="141.28" text-anchor="end" class="val">-1</text><text x="240" y="174.28" text-anchor="end" class="label">Yukon</text><rect x="589.97" y="157.00" width="5.03" height="24" class="neg"/><text x="583.97" y="174.28" text-anchor="end" class="val">-32</text><text x="240" y="207.28" text-anchor="end" class="label">Prince Edward Island</text><rect x="586.82" y="190.00" width="8.18" height="24" class="neg"/><text x="580.82" y="207.28" text-anchor="end" class="val">-52</text><text x="240" y="240.28" text-anchor="end" class="label">Alberta</text><rect x="581.16" y="223.00" width="13.84" height="24" class="neg"/><text x="575.16" y="240.28" text-anchor="end" class="val">-88</text><text x="240" y="273.28" text-anchor="end" class="label">Newfoundland and Labrador</text><rect x="566.22" y="256.00" width="28.78" height="24" class="neg"/><text x="560.22" y="273.28" text-anchor="end" class="val">-183</text><text x="240" y="306.28" text-anchor="end" class="label">Saskatchewan</text><rect x="553.02" y="289.00" width="41.98" height="24" class="neg"/><text x="547.02" y="306.28" text-anchor="end" class="val">-267</text><text x="240" y="339.28" text-anchor="end" class="label">Nova Scotia</text><rect x="550.18" y="322.00" width="44.82" height="24" class="neg"/><text x="544.18" y="339.28" text-anchor="end" class="val">-285</text><text x="240" y="372.28" text-anchor="end" class="label">Quebec</text><rect x="524.24" y="355.00" width="70.76" height="24" class="neg"/><text x="518.24" y="372.28" text-anchor="end" class="val">-450</text><text x="240" y="405.28" text-anchor="end" class="label">Ontario</text><rect x="250.00" y="388.00" width="345.00" height="24" class="neg"/><text x="244.00" y="405.28" text-anchor="end" class="val">-2,194</text></svg>
+      <div class="fine">Positive bars indicate improved net openings year-over-year; negative bars indicate deterioration.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Region Comparison Table (Q1)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Open 2025</th>
+            <th>Close 2025</th>
+            <th>Net 2025</th>
+            <th>Open YoY %</th>
+            <th>Close YoY %</th>
+            <th>Net Delta</th>
+            <th>Close/Open 2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>British Columbia</td><td>23,107</td><td>22,515</td><td>592</td><td>0.87%</td><td>-0.29%</td><td>266</td><td>0.974</td></tr><tr><td>Alberta</td><td>19,834</td><td>19,324</td><td>510</td><td>3.08%</td><td>3.65%</td><td>-88</td><td>0.974</td></tr><tr><td>Quebec</td><td>21,257</td><td>20,942</td><td>315</td><td>-2.10%</td><td>-0.03%</td><td>-450</td><td>0.985</td></tr><tr><td>Manitoba</td><td>3,801</td><td>3,662</td><td>139</td><td>1.44%</td><td>-3.12%</td><td>172</td><td>0.963</td></tr><tr><td>New Brunswick</td><td>2,208</td><td>2,191</td><td>17</td><td>0.45%</td><td>0.50%</td><td>-1</td><td>0.992</td></tr><tr><td>Newfoundland and Labrador</td><td>1,915</td><td>1,912</td><td>3</td><td>0.90%</td><td>11.68%</td><td>-183</td><td>0.998</td></tr><tr><td>Northwest Territories</td><td>135</td><td>135</td><td>0</td><td>3.05%</td><td>0.00%</td><td>4</td><td>1.000</td></tr><tr><td>Yukon</td><td>223</td><td>229</td><td>-6</td><td>2.29%</td><td>19.27%</td><td>-32</td><td>1.027</td></tr><tr><td>Prince Edward Island</td><td>650</td><td>690</td><td>-40</td><td>-3.27%</td><td>4.55%</td><td>-52</td><td>1.062</td></tr><tr><td>Saskatchewan</td><td>3,396</td><td>3,457</td><td>-61</td><td>-5.11%</td><td>2.49%</td><td>-267</td><td>1.018</td></tr><tr><td>Nova Scotia</td><td>2,877</td><td>2,955</td><td>-78</td><td>-3.49%</td><td>6.52%</td><td>-285</td><td>1.027</td></tr><tr><td>Ontario</td><td>55,685</td><td>56,620</td><td>-935</td><td>0.88%</td><td>4.97%</td><td>-2,194</td><td>1.017</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Key Insights</h2>
+      <ul>
+        <li>Net business creation dropped from 3,566 in Q1 2024 to 456 in Q1 2025 across regions with complete data, despite openings increasing slightly.</li>
+        <li>Top net-opening regions in Q1 2025 were British Columbia (592), Alberta (510), and Quebec (315).</li>
+        <li>Highest closure pressure (close/open ratio) appeared in Prince Edward Island (1.062), Nova Scotia (1.027), and Yukon (1.027).</li>
+        <li>Most improved net performance came from British Columbia (266), followed by Manitoba (172) and Northwest Territories (4).</li>
+        <li>Largest decline in absolute net openings was concentrated in Ontario, which is material because of its overall business base size.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>Recommendations</h2>
+      <ul>
+        <li>Prioritize retention-focused support in high-closure-pressure regions: cash-flow coaching in first 12 months, milestone-based mentoring, and early-warning triggers for liquidity stress.</li>
+        <li>Scale growth programs in high-net regions (especially Western provinces) using sector-specific accelerator cohorts and faster micro-financing approvals.</li>
+        <li>Create an Ontario stabilization initiative combining market validation sprints, procurement-readiness training, and post-launch advisor check-ins.</li>
+        <li>Deploy a monthly regional risk dashboard in Power BI/Tableau using the output files in <code>outputs/</code> to identify where closure growth outpaces opening growth.</li>
+      </ul>
+      <div class="fine">Data quality note: suppressed/unavailable records detected for Nunavut; excluded from aggregate comparisons.</div>
+    </div>
+  </div>
+</body>
+</html>

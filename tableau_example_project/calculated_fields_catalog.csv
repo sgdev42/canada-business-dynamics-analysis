@@ -1,0 +1,8 @@
+calc_name,table,formula,purpose
+Net Openings,fact_business_dynamics_wide_monthly.csv,SUM([opening_businesses]) - SUM([closing_businesses]),Core growth/decline signal.
+Close/Open Ratio,fact_business_dynamics_wide_monthly.csv,SUM([closing_businesses]) / SUM([opening_businesses]),Closure pressure index.
+Entrant Share,fact_business_dynamics_wide_monthly.csv,SUM([entrants]) / SUM([opening_businesses]),How much opening activity is true new creation.
+Reopening Share,fact_business_dynamics_wide_monthly.csv,SUM([reopening_businesses]) / SUM([opening_businesses]),How much opening activity is returning businesses.
+Opening Identity Gap,fact_business_dynamics_wide_monthly.csv,SUM([opening_businesses]) - (SUM([entrants]) + SUM([reopening_businesses])),Data quality validation.
+Closing Identity Gap,fact_business_dynamics_wide_monthly.csv,SUM([closing_businesses]) - (SUM([exits]) + SUM([temporary_closures])),Data quality validation.
+Risk Quadrant,region_q1_2024_vs_2025_scorecard.csv,IF [closures_yoy_pct] > 0 AND [openings_yoy_pct] <= 0 THEN 'High Risk' ELSEIF [closures_yoy_pct] > [openings_yoy_pct] THEN 'Pressure Rising' ELSE 'Relatively Stable/Growing' END,Segment regions for action recommendations.

@@ -1,0 +1,141 @@
+﻿"Cube Title","Product Id","CANSIM Id",URL,"Cube Notes","Archive Status",Frequency,"Start Reference Period","End Reference Period","Total number of dimensions"
+"Experimental estimates for business openings and closures for Canada, provinces and territories, census metropolitan areas, seasonally adjusted","33100270",,"https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3310027001",5;6,"CURRENT - a cube available to the public and that is current","Monthly","2015-01-01","2025-12-01","3",
+
+"Dimension ID","Dimension name","Dimension Notes","Dimension Definitions"
+"1","Geography",,""
+"2","Industry",,""
+"3","Business dynamics measure",,""
+
+"Dimension ID","Member Name","Classification Code","Member ID","Parent Member ID",Terminated,"Member Notes","Member Definitions"
+"1","Canada","[11124]","1","","",,
+"1","Newfoundland and Labrador ","[10]","2","1","",,
+"1","St. John's, Newfoundland and Labrador ","[001]","3","2","",,
+"1","Prince Edward Island ","[11]","4","1","",,
+"1","Nova Scotia ","[12]","5","1","",,
+"1","Halifax, Nova Scotia ","[205]","6","5","",,
+"1","New Brunswick ","[13]","7","1","",,
+"1","Moncton, New Brunswick ","[305]","8","7","",,
+"1","Saint John, New Brunswick ","[310]","9","7","",,
+"1","Quebec ","[24]","10","1","",,
+"1","Montréal, Quebec ","[462]","11","10","",,
+"1","Québec, Quebec ","[421]","12","10","",,
+"1","Saguenay, Quebec ","[408]","13","10","",,
+"1","Sherbrooke, Quebec ","[433]","14","10","",,
+"1","Trois-Rivières, Quebec ","[442]","15","10","",,
+"1","Ontario ","[35]","16","1","",,
+"1","Ottawa - Gatineau, Ontario/Quebec","[505]","17","16","",,
+"1","Barrie, Ontario ","[568]","18","16","",,
+"1","Belleville, Ontario ","[522]","19","16","",,
+"1","Brantford, Ontario ","[543]","20","16","",,
+"1","Greater Sudbury, Ontario ","[580]","21","16","",,
+"1","Guelph, Ontario ","[550]","22","16","",,
+"1","Hamilton, Ontario ","[537]","23","16","",,
+"1","Kingston, Ontario ","[521]","24","16","",,
+"1","Kitchener - Cambridge - Waterloo, Ontario ","[541]","25","16","",,
+"1","London, Ontario ","[555]","26","16","",,
+"1","Oshawa, Ontario ","[532]","27","16","",,
+"1","Peterborough, Ontario ","[529]","28","16","",,
+"1","St. Catharines - Niagara, Ontario ","[539]","29","16","",,
+"1","Thunder Bay, Ontario ","[595]","30","16","",,
+"1","Toronto, Ontario ","[535]","31","16","",,
+"1","Windsor, Ontario ","[559]","32","16","",,
+"1","Manitoba ","[46]","33","1","",,
+"1","Winnipeg, Manitoba ","[602]","34","33","",,
+"1","Saskatchewan ","[47]","35","1","",,
+"1","Regina, Saskatchewan ","[705]","36","35","",,
+"1","Saskatoon, Saskatchewan ","[725]","37","35","",,
+"1","Alberta ","[48]","38","1","",,
+"1","Calgary, Alberta ","[825]","39","38","",,
+"1","Edmonton, Alberta ","[835]","40","38","",,
+"1","Lethbridge, Alberta ","[810]","41","38","",,
+"1","British Columbia ","[59]","42","1","",,
+"1","Abbotsford - Mission, British Columbia ","[932]","43","42","",,
+"1","Kelowna, British Columbia ","[915]","44","42","",,
+"1","Vancouver, British Columbia ","[933]","45","42","",,
+"1","Victoria, British Columbia ","[935]","46","42","",,
+"1","Yukon","[60]","47","1","",,
+"1","Northwest Territories","[61]","48","1","",,
+"1","Nunavut","[62]","49","1","",,
+"2","Business sector industries [T004]","","1","","",,
+"2","Forestry, fishing and hunting [11]","","2","1","",,
+"2","Mining, quarrying, and oil and gas extraction [21]","","3","1","",,
+"2","Utilities [22]","","4","1","",,
+"2","Construction [23]","","5","1","",,
+"2","Manufacturing [31-33]","","6","1","",,
+"2","Food manufacturing [311]","","30","1","",,
+"2","Beverage and tobacco product manufacturing [312]","","31","1","",,
+"2","Wholesale trade [41]","","7","1","",,
+"2","Retail trade [44-45]","","8","1","",,
+"2","Transportation and warehousing [48-49]","","9","1","",,
+"2","Information and cultural industries [51]","","10","1","",,
+"2","Finance and insurance and Management of companies and enterprises [52, 55]","","11","1","",,
+"2","Real estate and rental and leasing [53]","","12","1","",,
+"2","Professional, scientific and technical services [54]","","13","1","",,
+"2","Administrative and support, waste management and remediation services [56]","","14","1","",,
+"2","Educational services [61]","","15","1","",9,
+"2","Health care and social assistance [62]","","16","1","",10,
+"2","Arts, entertainment and recreation [71]","","17","1","",,
+"2","Accommodation and food services [72]","","18","1","",,
+"2","Other services (except public administration) [81]","","19","1","",,
+"2","Tourism industry","","20","1","",7,
+"2","Total tourism transportation","","21","20","",7,
+"2","Air transportation (tourism) [4811, 4812]","","22","21","",7,
+"2","Rail, scenic and sightseeing transportation (tourism) [482114, 487110, 487210, 487990]","","23","21","",7,
+"2","Water transportation (tourism) [483115, 483116, 483213, 483214]","","24","21","",7,
+"2","Bus transportation, taxi and limousine services, and vehicle rental (tourism) [485110, 485210, 485410, 485510, 485990, 485310, 485320, 532111, 532120]","","25","21","",7,
+"2","Travel services (tourism) [561510, 561520, 561590]","","26","20","",7,
+"2","Recreation and entertainment (tourism) [51213, 7111, 7112, 7113, 7115, 7121, 7131, 7132, 713910, 713920, 713930, 713950, 713990]","","27","20","",7,
+"2","Accommodation (tourism) [721111, 721112, 721113, 721120, 721114, 721211, 721213, 721191, 721192, 721198, 721212]","","28","20","",7,
+"2","Food and beverage services (tourism) [722511, 722512, 722410]","","29","20","",7,
+"2","Business sector industries (except educational services and health care and social assistance)","","32","","",8,
+"3","Active businesses","","1","","",4,
+"3","Opening businesses","","2","","",1,
+"3","Continuing businesses","","3","","",3,
+"3","Closing businesses","","4","","",,
+"3","Reopening businesses","","5","","",11,
+"3","Entrants","","6","","",12,
+"3","Temporary closures","","7","","",13,
+"3","Exits","","8","","",14,
+
+Symbol Legend
+Description,Symbol
+"not available for a specific reference period","..",
+"less than the limit of detection","<LOD",
+"value rounded to 0 (zero) where there is a meaningful distinction between true zero and the value that was rounded","0s",
+"data quality: excellent","A",
+"data quality: very good","B",
+"data quality: good","C",
+"data quality: acceptable","D",
+"use with caution","E",
+"too unreliable to be published","F",
+"not applicable","...",
+"preliminary","p",
+"revised","r",
+"suppressed to meet the confidentiality requirements of the Statistics Act","x",
+"terminated","t",
+
+"Survey Code","Survey Name"
+"5401","Monthly Business Openings and Closures (MBOC)"
+"8013","Longitudinal Employment Analysis Program"
+
+"Subject Code","Subject Name"
+"33","Business performance and ownership"
+
+"Note ID",Note
+1,"Opening businesses are businesses that transition from having no employees in the previous month to having at least one employee in the current month. These instances occur when a new, small firm begins, when a large firm opens a new establishment or when a seasonal firm re-opens."
+3,"Continuing businesses are businesses that have at least one employee in the previous month and at least one employee in the current month."
+4,"Active businesses are those businesses that reported having one or more employees in a given month."
+5,"Fluctuations in economic time series are caused by seasonal, cyclical and irregular movements. A seasonally adjusted series is one from which seasonal movements have been eliminated."
+6,"The statistical unit of measures used is the enterprise, which represents the highest level of the Business Register statistical hierarchy. In alignment with the System of National Accounts, it is defined as an institutional unit that directs and controls the allocation of resources relating to its operations, and for which financial statements are maintained from which international transactions, an international investment position and a financial position for the unit can be derived. Enterprises can be corporations, quasi-corporations, institutions, or unincorporated businesses such as sole proprietors or partnerships. For incorporated enterprises, financial statements can be consolidated. While the vast majority of enterprises have operations in a single geographical area and in a single industry, large enterprise can have activities in multiple industries and multiple geographical areas. Enterprises with operations in multiple industries or provinces are counted in each relevant industry and geography. This approach ensures a more accurate reflection of business activity across industries and regions. However, it also means that the sum of disaggregated data (by industry or geography) may exceed totals at the aggregate level, where each enterprise is counted only once."
+7,"Tourism is not an official industry under the North American Industry Classification System (NAICS). The tourism industry is comprised of parts of different NAICs industries. The composition of the tourism industry reported here is based on Statistics Canada's Canadian Tourism Satellite Account. For more information please see: <a href=" https://www150.statcan.gc.ca/n1/pub/71-607-x/71-607-x2018011-eng.htm" rel="external noopener noreferrer" target="_blank">Provincial and Territorial Tourism Satellite Account (opens new window)</a>."
+8,"Business sector industries, excluding educational services (NAICS 61) and health care and social assistance (NAICS 62)."
+9,"Educational services includes business schools and computer and management training (NAICS 6114), technical and trade schools (NAICS 6115), other schools and instruction (NAICS 6116), and educational support services (NAICS 6117)."
+10,"Health care and social assistance includes ambulatory health care services (NAICS 621), nursing and residential care facilities (NAICS 623) and social assistance (NAICS 624)."
+11,"Reopening businesses are defined as opening businesses that were also active in a previous month."
+12,"Entrants are businesses with employment in the current month that were not active in any previous month in the current or previous year."
+13,"A temporary business closure is the difference between closures and exits."
+14,"The definition of exits is based on the Longitudinal Employment Analysis Program (LEAP) annual exits. Because the LEAP definition can require up to 24 months of data to be counted as an exit, projections of exits using predicted growth rates are implemented using a regression model of exits on closures of more than 6 months. As a result, there are no published exits in the last six months."
+
+"Correction ID","Correction Date","Correction Note"
+"3403","2022-01-07","On January 07, 2022 the data for Temporary closures have been corrected.",
+

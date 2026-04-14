@@ -1,0 +1,15 @@
+region,region_abbr,region_group,geo_level
+Alberta,AB,Prairies,Province/Territory
+British Columbia,BC,West,Province/Territory
+Canada,CA,National,National
+Manitoba,MB,Prairies,Province/Territory
+New Brunswick,NB,Atlantic,Province/Territory
+Newfoundland and Labrador,NL,Atlantic,Province/Territory
+Northwest Territories,NT,North,Province/Territory
+Nova Scotia,NS,Atlantic,Province/Territory
+Nunavut,NU,North,Province/Territory
+Ontario,ON,Central,Province/Territory
+Prince Edward Island,PE,Atlantic,Province/Territory
+Quebec,QC,Central,Province/Territory
+Saskatchewan,SK,Prairies,Province/Territory
+Yukon,YT,North,Province/Territory

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Interactive Business Dynamics Demo (Q1 Focus)</title>
+  <script src="./assets/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --line: #d8e0ea;
+      --text: #1d2a35;
+      --muted: #5b6b7a;
+      --blue: #1f77b4;
+      --orange: #ff7f0e;
+      --green: #1f8a70;
+      --red: #c0392b;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 18px; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    .sub { color: var(--muted); margin-bottom: 14px; font-size: 13px; }
+    .controls {
+      display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 10px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+    }
+    .controls label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .controls select { width: 100%; padding: 7px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+    .kpi .val { font-size: 24px; font-weight: 700; }
+    .kpi .lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 8px 0; }
+    .panel h3 { margin: 4px 8px 0; font-size: 14px; }
+    .plot { height: 360px; }
+    .insights { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+    .insights h3 { margin: 2px 0 8px; font-size: 14px; }
+    .insights ul { margin: 0; padding-left: 18px; }
+    .insights li { margin: 6px 0; font-size: 13px; }
+    .foot { margin-top: 12px; font-size: 12px; color: var(--muted); }
+    @media (max-width: 980px) {
+      .controls { grid-template-columns: 1fr 1fr; }
+      .kpis { grid-template-columns: 1fr 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Interactive Analytics Demo (Offline, Q1 Focus)</h1>
+    <div class="sub">Scope locked to Jan-Mar 2024 and Jan-Mar 2025 | Built from Statistics Canada table 33-10-0270-01 | Generated: 2026-04-13T23:15:03</div>
+
+    <div class="controls">
+      <div>
+        <label>Regional Group</label>
+        <select id="groupFilter">
+          <option value="All">All</option>
+          <option>Atlantic</option>
+          <option>Central</option>
+          <option>Prairies</option>
+          <option>West</option>
+          <option>North</option>
+        </select>
+      </div>
+      <div>
+        <label>Sort Regions By</label>
+        <select id="sortBy">
+          <option value="net_q1_2025">Net Q1 2025</option>
+          <option value="net_change_abs">Net Change vs Q1 2024</option>
+          <option value="closure_to_opening_ratio_q1_2025">Closure/Open Ratio</option>
+          <option value="openings_q1_2025">Openings Q1 2025</option>
+        </select>
+      </div>
+      <div>
+        <label>Focus Region</label>
+        <select id="focusRegion">
+          <option value="All">All Regions</option>
+        </select>
+      </div>
+      <div>
+        <label>View Scope</label>
+        <select id="scope">
+          <option value="openclose">Open/Close Complete Regions</option>
+          <option value="all8">All 8 Measures Complete Regions</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="val" id="kpiOpen">-</div><div class="lbl">Q1 2025 Openings</div></div>
+      <div class="kpi"><div class="val" id="kpiClose">-</div><div class="lbl">Q1 2025 Closures</div></div>
+      <div class="kpi"><div class="val" id="kpiNet">-</div><div class="lbl">Q1 2025 Net Openings</div></div>
+      <div class="kpi"><div class="val" id="kpiDelta">-</div><div class="lbl">Net Change vs Q1 2024</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h3>National Q1 Monthly Trend: Openings vs Closures vs Net</h3>
+        <div id="trend" class="plot"></div>
+      </div>
+      <div class="panel">
+        <h3>Regional Net Openings (Q1 2025)</h3>
+        <div id="regionalBar" class="plot"></div>
+      </div>
+      <div class="panel">
+        <h3>Action Matrix: Opening YoY% vs Closing YoY%</h3>
+        <div id="matrix" class="plot"></div>
+      </div>
+      <div class="panel">
+        <h3>Composition: Entrants/Reopenings and Exits/Temporary Closures</h3>
+        <div id="mix" class="plot"></div>
+      </div>
+    </div>
+
+    <div class="insights">
+      <h3>Auto Insights</h3>
+      <ul id="insightsList"></ul>
+    </div>
+
+    <div class="foot">
+      Offline version: includes local Plotly asset for easy sharing. Click bars or bubbles to focus a region. Nunavut may be excluded due to suppressed values.
+    </div>
+  </div>
+
+  <script>
+    const data = {"generated_at":"2026-04-13T23:15:03","national_monthly":[{"month":"2024-01","year":2024,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":45447.0,"closing_businesses":43431.0,"net_openings":2016.0,"entrants":16379.0,"reopening_businesses":29068.0,"exits":17436.0,"temporary_closures":25995.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":44581.0,"closing_businesses":44008.0,"net_openings":573.0,"entrants":16417.0,"reopening_businesses":28164.0,"exits":16945.0,"temporary_closures":27063.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":43734.0,"closing_businesses":43500.0,"net_openings":234.0,"entrants":15654.0,"reopening_businesses":28080.0,"exits":17512.0,"temporary_closures":25988.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":44862.0,"closing_businesses":45282.0,"net_openings":-420.0,"entrants":15063.0,"reopening_businesses":29799.0,"exits":18551.0,"temporary_closures":26731.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":44594.0,"closing_businesses":44345.0,"net_openings":249.0,"entrants":14366.0,"reopening_businesses":30228.0,"exits":17269.0,"temporary_closures":27076.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Canada","region_group":"National","geo_level":"National","opening_businesses":44497.0,"closing_businesses":45121.0,"net_openings":-624.0,"entrants":14830.0,"reopening_businesses":29667.0,"exits":18109.0,"temporary_closures":27012.0,"complete_row_all_8_measures":1}],"regional_monthly":[{"month":"2024-01","year":2024,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6750.0,"closing_businesses":6181.0,"net_openings":569.0,"entrants":2519.0,"reopening_businesses":4231.0,"exits":2489.0,"temporary_closures":3692.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6382.0,"closing_businesses":6208.0,"net_openings":174.0,"entrants":2378.0,"reopening_businesses":4004.0,"exits":2368.0,"temporary_closures":3840.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6110.0,"closing_businesses":6255.0,"net_openings":-145.0,"entrants":2234.0,"reopening_businesses":3876.0,"exits":2496.0,"temporary_closures":3759.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6624.0,"closing_businesses":6519.0,"net_openings":105.0,"entrants":2299.0,"reopening_businesses":4325.0,"exits":2730.0,"temporary_closures":3789.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6521.0,"closing_businesses":6374.0,"net_openings":147.0,"entrants":2082.0,"reopening_businesses":4439.0,"exits":2587.0,"temporary_closures":3787.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Alberta","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":6689.0,"closing_businesses":6431.0,"net_openings":258.0,"entrants":2197.0,"reopening_businesses":4492.0,"exits":2718.0,"temporary_closures":3713.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":7695.0,"closing_businesses":7433.0,"net_openings":262.0,"entrants":2896.0,"reopening_businesses":4799.0,"exits":3049.0,"temporary_closures":4384.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":7676.0,"closing_businesses":7591.0,"net_openings":85.0,"entrants":2820.0,"reopening_businesses":4856.0,"exits":2909.0,"temporary_closures":4682.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":7536.0,"closing_businesses":7557.0,"net_openings":-21.0,"entrants":2703.0,"reopening_businesses":4833.0,"exits":3026.0,"temporary_closures":4531.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":8064.0,"closing_businesses":7632.0,"net_openings":432.0,"entrants":2664.0,"reopening_businesses":5400.0,"exits":3134.0,"temporary_closures":4498.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":7540.0,"closing_businesses":7374.0,"net_openings":166.0,"entrants":2300.0,"reopening_businesses":5240.0,"exits":2933.0,"temporary_closures":4441.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"British Columbia","region_group":"West","geo_level":"Province/Territory","opening_businesses":7503.0,"closing_businesses":7509.0,"net_openings":-6.0,"entrants":2512.0,"reopening_businesses":4991.0,"exits":3074.0,"temporary_closures":4435.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1237.0,"closing_businesses":1219.0,"net_openings":18.0,"entrants":433.0,"reopening_businesses":804.0,"exits":536.0,"temporary_closures":683.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1262.0,"closing_businesses":1268.0,"net_openings":-6.0,"entrants":487.0,"reopening_businesses":775.0,"exits":509.0,"temporary_closures":759.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1248.0,"closing_businesses":1293.0,"net_openings":-45.0,"entrants":430.0,"reopening_businesses":818.0,"exits":494.0,"temporary_closures":799.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1283.0,"closing_businesses":1264.0,"net_openings":19.0,"entrants":470.0,"reopening_businesses":813.0,"exits":509.0,"temporary_closures":755.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1236.0,"closing_businesses":1207.0,"net_openings":29.0,"entrants":394.0,"reopening_businesses":842.0,"exits":495.0,"temporary_closures":712.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Manitoba","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1282.0,"closing_businesses":1191.0,"net_openings":91.0,"entrants":449.0,"reopening_businesses":833.0,"exits":552.0,"temporary_closures":639.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":721.0,"closing_businesses":737.0,"net_openings":-16.0,"entrants":257.0,"reopening_businesses":464.0,"exits":290.0,"temporary_closures":447.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":747.0,"closing_businesses":721.0,"net_openings":26.0,"entrants":287.0,"reopening_businesses":460.0,"exits":261.0,"temporary_closures":460.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":730.0,"closing_businesses":722.0,"net_openings":8.0,"entrants":254.0,"reopening_businesses":476.0,"exits":273.0,"temporary_closures":449.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":737.0,"closing_businesses":726.0,"net_openings":11.0,"entrants":255.0,"reopening_businesses":482.0,"exits":292.0,"temporary_closures":434.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":730.0,"closing_businesses":749.0,"net_openings":-19.0,"entrants":240.0,"reopening_businesses":490.0,"exits":294.0,"temporary_closures":455.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"New Brunswick","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":741.0,"closing_businesses":716.0,"net_openings":25.0,"entrants":259.0,"reopening_businesses":482.0,"exits":307.0,"temporary_closures":409.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":676.0,"closing_businesses":582.0,"net_openings":94.0,"entrants":219.0,"reopening_businesses":457.0,"exits":216.0,"temporary_closures":366.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":605.0,"closing_businesses":589.0,"net_openings":16.0,"entrants":205.0,"reopening_businesses":400.0,"exits":214.0,"temporary_closures":375.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":617.0,"closing_businesses":541.0,"net_openings":76.0,"entrants":212.0,"reopening_businesses":405.0,"exits":214.0,"temporary_closures":327.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":623.0,"closing_businesses":640.0,"net_openings":-17.0,"entrants":220.0,"reopening_businesses":403.0,"exits":278.0,"temporary_closures":362.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":615.0,"closing_businesses":657.0,"net_openings":-42.0,"entrants":171.0,"reopening_businesses":444.0,"exits":276.0,"temporary_closures":381.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Newfoundland and Labrador","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":677.0,"closing_businesses":615.0,"net_openings":62.0,"entrants":192.0,"reopening_businesses":485.0,"exits":282.0,"temporary_closures":333.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":49.0,"closing_businesses":48.0,"net_openings":1.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-02","year":2024,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":37.0,"closing_businesses":43.0,"net_openings":-6.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-03","year":2024,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":45.0,"closing_businesses":44.0,"net_openings":1.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-01","year":2025,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":35.0,"closing_businesses":45.0,"net_openings":-10.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-02","year":2025,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":54.0,"closing_businesses":41.0,"net_openings":13.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-03","year":2025,"region":"Northwest Territories","region_group":"North","geo_level":"Province/Territory","opening_businesses":46.0,"closing_businesses":49.0,"net_openings":-3.0,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-01","year":2024,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":1034.0,"closing_businesses":923.0,"net_openings":111.0,"entrants":385.0,"reopening_businesses":649.0,"exits":339.0,"temporary_closures":584.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":988.0,"closing_businesses":925.0,"net_openings":63.0,"entrants":376.0,"reopening_businesses":612.0,"exits":322.0,"temporary_closures":603.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":959.0,"closing_businesses":926.0,"net_openings":33.0,"entrants":353.0,"reopening_businesses":606.0,"exits":328.0,"temporary_closures":598.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":935.0,"closing_businesses":932.0,"net_openings":3.0,"entrants":326.0,"reopening_businesses":609.0,"exits":354.0,"temporary_closures":578.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":967.0,"closing_businesses":1056.0,"net_openings":-89.0,"entrants":336.0,"reopening_businesses":631.0,"exits":371.0,"temporary_closures":685.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Nova Scotia","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":975.0,"closing_businesses":967.0,"net_openings":8.0,"entrants":304.0,"reopening_businesses":671.0,"exits":364.0,"temporary_closures":603.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-02","year":2024,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-03","year":2024,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-01","year":2025,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-02","year":2025,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-03","year":2025,"region":"Nunavut","region_group":"North","geo_level":"Province/Territory","opening_businesses":null,"closing_businesses":null,"net_openings":null,"entrants":null,"reopening_businesses":null,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-01","year":2024,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18879.0,"closing_businesses":17912.0,"net_openings":967.0,"entrants":6849.0,"reopening_businesses":12030.0,"exits":7311.0,"temporary_closures":10601.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18308.0,"closing_businesses":18142.0,"net_openings":166.0,"entrants":6794.0,"reopening_businesses":11514.0,"exits":7205.0,"temporary_closures":10937.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18010.0,"closing_businesses":17884.0,"net_openings":126.0,"entrants":6546.0,"reopening_businesses":11464.0,"exits":7433.0,"temporary_closures":10451.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18562.0,"closing_businesses":19172.0,"net_openings":-610.0,"entrants":6352.0,"reopening_businesses":12210.0,"exits":8337.0,"temporary_closures":10835.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18602.0,"closing_businesses":18502.0,"net_openings":100.0,"entrants":6105.0,"reopening_businesses":12497.0,"exits":7727.0,"temporary_closures":10775.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Ontario","region_group":"Central","geo_level":"Province/Territory","opening_businesses":18521.0,"closing_businesses":18946.0,"net_openings":-425.0,"entrants":6115.0,"reopening_businesses":12406.0,"exits":8129.0,"temporary_closures":10817.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":234.0,"closing_businesses":233.0,"net_openings":1.0,"entrants":89.0,"reopening_businesses":145.0,"exits":91.0,"temporary_closures":142.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":212.0,"closing_businesses":218.0,"net_openings":-6.0,"entrants":68.0,"reopening_businesses":144.0,"exits":79.0,"temporary_closures":139.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":226.0,"closing_businesses":209.0,"net_openings":17.0,"entrants":75.0,"reopening_businesses":151.0,"exits":81.0,"temporary_closures":128.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":210.0,"closing_businesses":219.0,"net_openings":-9.0,"entrants":72.0,"reopening_businesses":138.0,"exits":93.0,"temporary_closures":126.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":221.0,"closing_businesses":225.0,"net_openings":-4.0,"entrants":76.0,"reopening_businesses":145.0,"exits":101.0,"temporary_closures":124.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Prince Edward Island","region_group":"Atlantic","geo_level":"Province/Territory","opening_businesses":219.0,"closing_businesses":246.0,"net_openings":-27.0,"entrants":71.0,"reopening_businesses":148.0,"exits":96.0,"temporary_closures":150.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7336.0,"closing_businesses":6932.0,"net_openings":404.0,"entrants":2585.0,"reopening_businesses":4751.0,"exits":2755.0,"temporary_closures":4177.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7237.0,"closing_businesses":7039.0,"net_openings":198.0,"entrants":2590.0,"reopening_businesses":4647.0,"exits":2651.0,"temporary_closures":4388.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7141.0,"closing_businesses":6978.0,"net_openings":163.0,"entrants":2475.0,"reopening_businesses":4666.0,"exits":2757.0,"temporary_closures":4221.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7189.0,"closing_businesses":6736.0,"net_openings":453.0,"entrants":2424.0,"reopening_businesses":4765.0,"exits":2491.0,"temporary_closures":4245.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7062.0,"closing_businesses":7033.0,"net_openings":29.0,"entrants":2378.0,"reopening_businesses":4684.0,"exits":2361.0,"temporary_closures":4672.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Quebec","region_group":"Central","geo_level":"Province/Territory","opening_businesses":7006.0,"closing_businesses":7173.0,"net_openings":-167.0,"entrants":2392.0,"reopening_businesses":4614.0,"exits":2504.0,"temporary_closures":4669.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1253.0,"closing_businesses":1141.0,"net_openings":112.0,"entrants":451.0,"reopening_businesses":802.0,"exits":417.0,"temporary_closures":724.0,"complete_row_all_8_measures":1},{"month":"2024-02","year":2024,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1175.0,"closing_businesses":1103.0,"net_openings":72.0,"entrants":420.0,"reopening_businesses":755.0,"exits":418.0,"temporary_closures":685.0,"complete_row_all_8_measures":1},{"month":"2024-03","year":2024,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1151.0,"closing_businesses":1129.0,"net_openings":22.0,"entrants":412.0,"reopening_businesses":739.0,"exits":441.0,"temporary_closures":688.0,"complete_row_all_8_measures":1},{"month":"2025-01","year":2025,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1155.0,"closing_businesses":1127.0,"net_openings":28.0,"entrants":388.0,"reopening_businesses":767.0,"exits":445.0,"temporary_closures":682.0,"complete_row_all_8_measures":1},{"month":"2025-02","year":2025,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1087.0,"closing_businesses":1171.0,"net_openings":-84.0,"entrants":375.0,"reopening_businesses":712.0,"exits":430.0,"temporary_closures":741.0,"complete_row_all_8_measures":1},{"month":"2025-03","year":2025,"region":"Saskatchewan","region_group":"Prairies","geo_level":"Province/Territory","opening_businesses":1154.0,"closing_businesses":1159.0,"net_openings":-5.0,"entrants":353.0,"reopening_businesses":801.0,"exits":413.0,"temporary_closures":746.0,"complete_row_all_8_measures":1},{"month":"2024-01","year":2024,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":75.0,"closing_businesses":79.0,"net_openings":-4.0,"entrants":25.0,"reopening_businesses":50.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-02","year":2024,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":66.0,"closing_businesses":61.0,"net_openings":5.0,"entrants":20.0,"reopening_businesses":46.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2024-03","year":2024,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":77.0,"closing_businesses":52.0,"net_openings":25.0,"entrants":24.0,"reopening_businesses":53.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-01","year":2025,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":72.0,"closing_businesses":70.0,"net_openings":2.0,"entrants":29.0,"reopening_businesses":43.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-02","year":2025,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":79.0,"closing_businesses":78.0,"net_openings":1.0,"entrants":28.0,"reopening_businesses":51.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0},{"month":"2025-03","year":2025,"region":"Yukon","region_group":"North","geo_level":"Province/Territory","opening_businesses":72.0,"closing_businesses":81.0,"net_openings":-9.0,"entrants":26.0,"reopening_businesses":46.0,"exits":null,"temporary_closures":null,"complete_row_all_8_measures":0}],"regional_q1_scorecard":[{"region":"Alberta","region_abbr":"AB","region_group":"Prairies","openings_q1_2024":19242.0,"closures_q1_2024":18644.0,"net_q1_2024":598.0,"openings_q1_2025":19834.0,"closures_q1_2025":19324.0,"net_q1_2025":510.0,"entrants_q1_2025":6578.0,"reopening_q1_2025":13256.0,"exits_q1_2025":8035.0,"temp_closures_q1_2025":11289.0,"openings_yoy_pct":3.0766032636940026,"closures_yoy_pct":3.6472859901308734,"net_change_abs":-88.0,"closure_to_opening_ratio_q1_2025":0.9742865786023999,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"British Columbia","region_abbr":"BC","region_group":"West","openings_q1_2024":22907.0,"closures_q1_2024":22581.0,"net_q1_2024":326.0,"openings_q1_2025":23107.0,"closures_q1_2025":22515.0,"net_q1_2025":592.0,"entrants_q1_2025":7476.0,"reopening_q1_2025":15631.0,"exits_q1_2025":9141.0,"temp_closures_q1_2025":13374.0,"openings_yoy_pct":0.8730955603090759,"closures_yoy_pct":-0.29228112129666534,"net_change_abs":266.0,"closure_to_opening_ratio_q1_2025":0.974380057991085,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Manitoba","region_abbr":"MB","region_group":"Prairies","openings_q1_2024":3747.0,"closures_q1_2024":3780.0,"net_q1_2024":-33.0,"openings_q1_2025":3801.0,"closures_q1_2025":3662.0,"net_q1_2025":139.0,"entrants_q1_2025":1313.0,"reopening_q1_2025":2488.0,"exits_q1_2025":1556.0,"temp_closures_q1_2025":2106.0,"openings_yoy_pct":1.4411529223378703,"closures_yoy_pct":-3.1216931216931214,"net_change_abs":172.0,"closure_to_opening_ratio_q1_2025":0.9634306761378585,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"New Brunswick","region_abbr":"NB","region_group":"Atlantic","openings_q1_2024":2198.0,"closures_q1_2024":2180.0,"net_q1_2024":18.0,"openings_q1_2025":2208.0,"closures_q1_2025":2191.0,"net_q1_2025":17.0,"entrants_q1_2025":754.0,"reopening_q1_2025":1454.0,"exits_q1_2025":893.0,"temp_closures_q1_2025":1298.0,"openings_yoy_pct":0.4549590536851683,"closures_yoy_pct":0.5045871559633028,"net_change_abs":-1.0,"closure_to_opening_ratio_q1_2025":0.9923007246376812,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Newfoundland and Labrador","region_abbr":"NL","region_group":"Atlantic","openings_q1_2024":1898.0,"closures_q1_2024":1712.0,"net_q1_2024":186.0,"openings_q1_2025":1915.0,"closures_q1_2025":1912.0,"net_q1_2025":3.0,"entrants_q1_2025":583.0,"reopening_q1_2025":1332.0,"exits_q1_2025":836.0,"temp_closures_q1_2025":1076.0,"openings_yoy_pct":0.8956796628029504,"closures_yoy_pct":11.682242990654206,"net_change_abs":-183.0,"closure_to_opening_ratio_q1_2025":0.9984334203655353,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Northwest Territories","region_abbr":"NT","region_group":"North","openings_q1_2024":131.0,"closures_q1_2024":135.0,"net_q1_2024":-4.0,"openings_q1_2025":135.0,"closures_q1_2025":135.0,"net_q1_2025":0.0,"entrants_q1_2025":null,"reopening_q1_2025":null,"exits_q1_2025":null,"temp_closures_q1_2025":null,"openings_yoy_pct":3.0534351145038165,"closures_yoy_pct":0.0,"net_change_abs":4.0,"closure_to_opening_ratio_q1_2025":1.0,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":0},{"region":"Nova Scotia","region_abbr":"NS","region_group":"Atlantic","openings_q1_2024":2981.0,"closures_q1_2024":2774.0,"net_q1_2024":207.0,"openings_q1_2025":2877.0,"closures_q1_2025":2955.0,"net_q1_2025":-78.0,"entrants_q1_2025":966.0,"reopening_q1_2025":1911.0,"exits_q1_2025":1089.0,"temp_closures_q1_2025":1866.0,"openings_yoy_pct":-3.488762160348876,"closures_yoy_pct":6.5248738284066325,"net_change_abs":-285.0,"closure_to_opening_ratio_q1_2025":1.02711157455683,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Nunavut","region_abbr":"NU","region_group":"North","openings_q1_2024":null,"closures_q1_2024":null,"net_q1_2024":null,"openings_q1_2025":null,"closures_q1_2025":null,"net_q1_2025":null,"entrants_q1_2025":null,"reopening_q1_2025":null,"exits_q1_2025":null,"temp_closures_q1_2025":null,"openings_yoy_pct":null,"closures_yoy_pct":null,"net_change_abs":null,"closure_to_opening_ratio_q1_2025":null,"complete_data_open_close_q1_2024_2025":0,"complete_data_all8_q1_2024_2025":0},{"region":"Ontario","region_abbr":"ON","region_group":"Central","openings_q1_2024":55197.0,"closures_q1_2024":53938.0,"net_q1_2024":1259.0,"openings_q1_2025":55685.0,"closures_q1_2025":56620.0,"net_q1_2025":-935.0,"entrants_q1_2025":18572.0,"reopening_q1_2025":37113.0,"exits_q1_2025":24193.0,"temp_closures_q1_2025":32427.0,"openings_yoy_pct":0.8841060202547241,"closures_yoy_pct":4.972375690607735,"net_change_abs":-2194.0,"closure_to_opening_ratio_q1_2025":1.0167908772559935,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Prince Edward Island","region_abbr":"PE","region_group":"Atlantic","openings_q1_2024":672.0,"closures_q1_2024":660.0,"net_q1_2024":12.0,"openings_q1_2025":650.0,"closures_q1_2025":690.0,"net_q1_2025":-40.0,"entrants_q1_2025":219.0,"reopening_q1_2025":431.0,"exits_q1_2025":290.0,"temp_closures_q1_2025":400.0,"openings_yoy_pct":-3.273809523809524,"closures_yoy_pct":4.545454545454546,"net_change_abs":-52.0,"closure_to_opening_ratio_q1_2025":1.0615384615384615,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Quebec","region_abbr":"QC","region_group":"Central","openings_q1_2024":21714.0,"closures_q1_2024":20949.0,"net_q1_2024":765.0,"openings_q1_2025":21257.0,"closures_q1_2025":20942.0,"net_q1_2025":315.0,"entrants_q1_2025":7194.0,"reopening_q1_2025":14063.0,"exits_q1_2025":7356.0,"temp_closures_q1_2025":13586.0,"openings_yoy_pct":-2.1046329556967858,"closures_yoy_pct":-0.03341448279154136,"net_change_abs":-450.0,"closure_to_opening_ratio_q1_2025":0.9851813520252152,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Saskatchewan","region_abbr":"SK","region_group":"Prairies","openings_q1_2024":3579.0,"closures_q1_2024":3373.0,"net_q1_2024":206.0,"openings_q1_2025":3396.0,"closures_q1_2025":3457.0,"net_q1_2025":-61.0,"entrants_q1_2025":1116.0,"reopening_q1_2025":2280.0,"exits_q1_2025":1288.0,"temp_closures_q1_2025":2169.0,"openings_yoy_pct":-5.113160100586756,"closures_yoy_pct":2.490364660539579,"net_change_abs":-267.0,"closure_to_opening_ratio_q1_2025":1.017962308598351,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":1},{"region":"Yukon","region_abbr":"YT","region_group":"North","openings_q1_2024":218.0,"closures_q1_2024":192.0,"net_q1_2024":26.0,"openings_q1_2025":223.0,"closures_q1_2025":229.0,"net_q1_2025":-6.0,"entrants_q1_2025":83.0,"reopening_q1_2025":140.0,"exits_q1_2025":null,"temp_closures_q1_2025":null,"openings_yoy_pct":2.293577981651376,"closures_yoy_pct":19.270833333333336,"net_change_abs":-32.0,"closure_to_opening_ratio_q1_2025":1.0269058295964126,"complete_data_open_close_q1_2024_2025":1,"complete_data_all8_q1_2024_2025":0}]};
+    const fmtInt = (v) => new Intl.NumberFormat('en-CA', {maximumFractionDigits:0}).format(v);
+    const fmtPct = (v, d=1) => (v == null ? "n/a" : `${v.toFixed(d)}%`);
+    const fmtRat = (v) => (v == null ? "n/a" : v.toFixed(3));
+
+    const els = {
+      groupFilter: document.getElementById('groupFilter'),
+      sortBy: document.getElementById('sortBy'),
+      focusRegion: document.getElementById('focusRegion'),
+      scope: document.getElementById('scope'),
+      kpiOpen: document.getElementById('kpiOpen'),
+      kpiClose: document.getElementById('kpiClose'),
+      kpiNet: document.getElementById('kpiNet'),
+      kpiDelta: document.getElementById('kpiDelta'),
+      insightsList: document.getElementById('insightsList'),
+    };
+
+    const regions = [...new Set(data.regional_q1_scorecard.map(d => d.region))].sort();
+    regions.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r; opt.textContent = r;
+      els.focusRegion.appendChild(opt);
+    });
+
+    function getFilteredScorecard() {
+      const group = els.groupFilter.value;
+      const scope = els.scope.value;
+      return data.regional_q1_scorecard.filter(d => {
+        if (group !== 'All' && d.region_group !== group) return false;
+        if (scope === 'openclose' && d.complete_data_open_close_q1_2024_2025 !== 1) return false;
+        if (scope === 'all8' && d.complete_data_all8_q1_2024_2025 !== 1) return false;
+        return true;
+      });
+    }
+
+    function selectedRegionOrNull() {
+      const r = els.focusRegion.value;
+      return r === 'All' ? null : r;
+    }
+
+    function renderKPIs(rows) {
+      const o = rows.reduce((a,b) => a + (b.openings_q1_2025 || 0), 0);
+      const c = rows.reduce((a,b) => a + (b.closures_q1_2025 || 0), 0);
+      const n = rows.reduce((a,b) => a + (b.net_q1_2025 || 0), 0);
+      const d = rows.reduce((a,b) => a + (b.net_change_abs || 0), 0);
+      els.kpiOpen.textContent = fmtInt(o);
+      els.kpiClose.textContent = fmtInt(c);
+      els.kpiNet.textContent = fmtInt(n);
+      els.kpiNet.style.color = n >= 0 ? 'var(--green)' : 'var(--red)';
+      els.kpiDelta.textContent = `${d >= 0 ? '+' : ''}${fmtInt(d)}`;
+      els.kpiDelta.style.color = d >= 0 ? 'var(--green)' : 'var(--red)';
+    }
+
+    function renderNationalTrend() {
+      const n = data.national_monthly;
+      Plotly.newPlot('trend', [
+        {
+          x: n.map(d => d.month),
+          y: n.map(d => d.opening_businesses),
+          name: 'Openings',
+          mode: 'lines+markers',
+          line: {color: '#1f77b4', width: 3},
+          marker: {size: 6}
+        },
+        {
+          x: n.map(d => d.month),
+          y: n.map(d => d.closing_businesses),
+          name: 'Closures',
+          mode: 'lines+markers',
+          line: {color: '#ff7f0e', width: 3},
+          marker: {size: 6}
+        },
+        {
+          x: n.map(d => d.month),
+          y: n.map(d => d.net_openings),
+          name: 'Net',
+          mode: 'lines+markers',
+          line: {color: '#1f8a70', width: 3, dash: 'dot'},
+          marker: {size: 6},
+          yaxis: 'y2'
+        }
+      ], {
+        margin: {l: 55, r: 55, t: 20, b: 50},
+        hovermode: 'x unified',
+        xaxis: {tickangle: -45},
+        yaxis: {title: 'Openings / Closures'},
+        yaxis2: {title: 'Net', overlaying: 'y', side: 'right', showgrid: false},
+        legend: {orientation: 'h', y: 1.13}
+      }, {displayModeBar: false, responsive: true});
+    }
+
+    function renderRegionalBar(rows) {
+      const sortBy = els.sortBy.value;
+      const regionFocus = selectedRegionOrNull();
+      const sorted = [...rows].sort((a,b) => (b[sortBy] || -Infinity) - (a[sortBy] || -Infinity));
+      const filtered = regionFocus ? sorted.filter(r => r.region === regionFocus) : sorted;
+      const colors = filtered.map(d => (d.net_q1_2025 || 0) >= 0 ? '#1f8a70' : '#c0392b');
+
+      Plotly.newPlot('regionalBar', [{
+        type: 'bar',
+        x: filtered.map(d => d.net_q1_2025),
+        y: filtered.map(d => d.region),
+        orientation: 'h',
+        marker: {color: colors},
+        customdata: filtered,
+        hovertemplate:
+          '<b>%{y}</b><br>' +
+          'Net Q1 2025: %{x:,}<br>' +
+          'Openings YoY: %{customdata.openings_yoy_pct:.2f}%<br>' +
+          'Closures YoY: %{customdata.closures_yoy_pct:.2f}%<extra></extra>'
+      }], {
+        margin: {l: 160, r: 20, t: 20, b: 35},
+        xaxis: {title: 'Net Openings (Q1 2025)', zeroline: true, zerolinecolor: '#999'},
+        yaxis: {autorange: 'reversed'}
+      }, {displayModeBar: false, responsive: true});
+
+      const bar = document.getElementById('regionalBar');
+      bar.on('plotly_click', ev => {
+        const region = ev.points?.[0]?.y;
+        if (region) {
+          els.focusRegion.value = region;
+          refresh();
+        }
+      });
+    }
+
+    function renderActionMatrix(rows) {
+      const regionFocus = selectedRegionOrNull();
+      const filtered = regionFocus ? rows.filter(r => r.region === regionFocus) : rows;
+      Plotly.newPlot('matrix', [{
+        type: 'scatter',
+        mode: 'markers+text',
+        x: filtered.map(d => d.openings_yoy_pct),
+        y: filtered.map(d => d.closures_yoy_pct),
+        text: filtered.map(d => d.region_abbr),
+        textposition: 'top center',
+        marker: {
+          size: filtered.map(d => Math.max(12, (d.openings_q1_2025 || 0) / 1800)),
+          color: filtered.map(d => d.net_change_abs),
+          colorscale: 'RdYlGn',
+          reversescale: false,
+          showscale: true,
+          colorbar: {title: 'Net Delta'}
+        },
+        customdata: filtered,
+        hovertemplate:
+          '<b>%{customdata.region}</b><br>' +
+          'Openings YoY: %{x:.2f}%<br>' +
+          'Closures YoY: %{y:.2f}%<br>' +
+          'Net Change: %{customdata.net_change_abs:,}<extra></extra>'
+      }], {
+        margin: {l: 50, r: 20, t: 20, b: 45},
+        xaxis: {title: 'Openings YoY %', zeroline: true, zerolinewidth: 1, zerolinecolor: '#888'},
+        yaxis: {title: 'Closures YoY %', zeroline: true, zerolinewidth: 1, zerolinecolor: '#888'},
+        shapes: [
+          {type: 'line', x0: 0, x1: 0, y0: -15, y1: 20, line: {color:'#777', dash:'dot'}},
+          {type: 'line', x0: -15, x1: 20, y0: 0, y1: 0, line: {color:'#777', dash:'dot'}}
+        ]
+      }, {displayModeBar: false, responsive: true});
+
+      const scatter = document.getElementById('matrix');
+      scatter.on('plotly_click', ev => {
+        const region = ev.points?.[0]?.customdata?.region;
+        if (region) {
+          els.focusRegion.value = region;
+          refresh();
+        }
+      });
+    }
+
+    function renderMix(rows) {
+      const regionFocus = selectedRegionOrNull();
+      const filtered = regionFocus ? rows.filter(r => r.region === regionFocus) : rows.slice(0, 8);
+      Plotly.newPlot('mix', [
+        {
+          type: 'bar',
+          x: filtered.map(d => d.region),
+          y: filtered.map(d => d.entrants_q1_2025),
+          name: 'Entrants',
+          marker: {color: '#1f77b4'}
+        },
+        {
+          type: 'bar',
+          x: filtered.map(d => d.region),
+          y: filtered.map(d => d.reopening_q1_2025),
+          name: 'Reopenings',
+          marker: {color: '#6baed6'}
+        },
+        {
+          type: 'bar',
+          x: filtered.map(d => d.region),
+          y: filtered.map(d => d.exits_q1_2025),
+          name: 'Exits',
+          marker: {color: '#e34a33'}
+        },
+        {
+          type: 'bar',
+          x: filtered.map(d => d.region),
+          y: filtered.map(d => d.temp_closures_q1_2025),
+          name: 'Temp closures',
+          marker: {color: '#fdbb84'}
+        }
+      ], {
+        barmode: 'stack',
+        margin: {l: 55, r: 20, t: 20, b: 95},
+        xaxis: {tickangle: -35},
+        yaxis: {title: 'Q1 2025 count'},
+        legend: {orientation: 'h', y: 1.16}
+      }, {displayModeBar: false, responsive: true});
+    }
+
+    function renderInsights(rows) {
+      const list = els.insightsList;
+      list.innerHTML = '';
+      if (!rows.length) return;
+      const byNet = [...rows].sort((a,b) => (b.net_q1_2025||0)-(a.net_q1_2025||0));
+      const byPressure = [...rows].sort((a,b) => (b.closure_to_opening_ratio_q1_2025||0)-(a.closure_to_opening_ratio_q1_2025||0));
+      const byDelta = [...rows].sort((a,b) => (a.net_change_abs||0)-(b.net_change_abs||0));
+      const i1 = `${byNet[0].region} leads net openings in Q1 2025 with ${fmtInt(byNet[0].net_q1_2025)}.`;
+      const i2 = `${byPressure[0].region} shows highest closure pressure (close/open=${fmtRat(byPressure[0].closure_to_opening_ratio_q1_2025)}).`;
+      const i3 = `Largest deterioration vs Q1 2024: ${byDelta[0].region} (${fmtInt(byDelta[0].net_change_abs)}).`;
+      [i1, i2, i3].forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        list.appendChild(li);
+      });
+    }
+
+    function refresh() {
+      const rows = getFilteredScorecard();
+      renderKPIs(rows);
+      renderNationalTrend();
+      renderRegionalBar(rows);
+      renderActionMatrix(rows);
+      renderMix(rows);
+      renderInsights(rows);
+    }
+
+    [els.groupFilter, els.sortBy, els.focusRegion, els.scope].forEach(el => el.addEventListener('change', refresh));
+    refresh();
+  </script>
+</body>
+</html>
